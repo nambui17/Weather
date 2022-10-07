@@ -1,0 +1,42 @@
+:root {
+    --lb: #8ECAE6;
+    --lb2: #219EBC;
+    --db: #023047;
+    --lo: #FFB703;
+    --do: #FB8500;
+}
+
+#searchDiv {
+    border-bottom: var(--db) solid 3px;
+}
+
+#searchBtn {
+    width: 100%;
+    background-color: var(--lb2);
+    border-color: var(--lb2);
+}
+
+#savedLoc {
+    width: 100%;
+    background-color: var(--lo);
+    color: var(--db);
+}
+
+#currentWea {
+    border: var(--db) solid 2px;
+    margin: 20px 20px 20px 0;
+}
+
+#currentWea h3 {
+    margin: 20px 0 30px 30px;
+}
+
+#currentWea ul li {
+    list-style: none;
+    line-height: 40px;
+    font-size:  20px;
+}
+
+
+
+

@@ -29,7 +29,8 @@ function getFive() {
                     return currResponse.json();
                 })
                 .then(function(currData) {
-                    currLoc.text(currData.name);
+                    var date = new Date((currData.dt + currData.timezone)*1000).toLocaleDateString("en-US");
+                    currLoc.text(currData.name + " " + date);
                     currTemp.text("Temp: " + currData.main.temp + "°F");
                     currFeel.text("Feels Like: " + currData.main.feels_like + "°F");
                     currWind.text("Wind Speed: " + currData.wind.speed + " MPH");
@@ -46,13 +47,17 @@ function getFive() {
                     console.log(fiveData.list);
                     for (var i=0; i<39; i++) {
                         if (i%8===0 || i==0) {
-                            forecast.children().eq(i/8).children().children().eq(0).text("");
+                            var date = new Date((fiveData.list[i].dt+fiveData.city.timezone)*1000).toLocaleDateString("en-US");
+                            forecast.children().eq(i/8).children().children().eq(0).text(date);
                             forecast.children().eq(i/8).children().children().eq(1).text("");
                             forecast.children().eq(i/8).children().children().eq(2).text("Temp: " + fiveData.list[i].main.temp + "°F");
                             forecast.children().eq(i/8).children().children().eq(3).text("Wind: " + fiveData.list[i].wind.speed + " MPH");
                             forecast.children().eq(i/8).children().children().eq(4).text("Humidity: " + fiveData.list[i].main.humidity + "%");
                         } else if (i===39) {
-                            forecast.children().eq(4).children().children().eq(0).text("");
+                            //the addition of the fiveData.city.timezone is to correct for timezone
+                            //The date converts the unix time stamp to normal time.
+                            var date = new Date((fiveData.list[i].dt+fiveData.city.timezone)*1000).toLocaleDateString("en-US");
+                            forecast.children().eq(4).children().children().eq(0).text(date);
                             forecast.children().eq(4).children().children().eq(1).text("");
                             forecast.children().eq(4).children().children().eq(2).text("Temp: " + fiveData.list[i].main.temp + "°F");
                             forecast.children().eq(4).children().children().eq(3).text("Wind: " + fiveData.list[i].wind.speed + " MPH");

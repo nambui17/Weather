@@ -38,9 +38,8 @@ function getWeather(e) {
                 })
                 .then(function(currData) {
                     var date = new Date((currData.dt + currData.timezone)*1000).toLocaleDateString("en-US");
-                    var iconCode =  currData.weather[0].icon.slice(0,-1);
-                    console.log(iconCode);
-                    var iconUrl =  "http://openweathermap.org/img/wn/" + iconCode + "d@2x.png";
+                    var iconCode =  currData.weather[0].icon
+                    var iconUrl =  "http://openweathermap.org/img/wn/" + iconCode + "@2x.png";
                     var imgEl= $('<img id="currIcon" class="mb-2 ml-4 text-center">');
                     imgEl.attr("src",iconUrl);
                     imgEl.insertAfter("h3");

@@ -8,12 +8,17 @@ var currFeel = $('#feels');
 var currLoc = $('#loc');
 var forecast = $('#forecast');
 var saved = $('#savedLocations');
-var saveArray=[];
-
+var currWea = $('#currentWea');
+var saveArray = [];
+if (typeof(localStorage.saveArray)=="undefined") {
+    var saveArray=[];
+} else {
+    var saveArray = JSON.parse(localStorage.saveArray);
+}
 //get Current weather function
 
 //get the Weather function for five day forecast
-function getFive(e) {
+function getWeather(e) {
     //location url for geocoding dependent on the search value for the input
     //parameter passed into function is either the search bar value or the text of the button for search history
     var locUrl = "https://api.openweathermap.org/geo/1.0/direct?q=" + e + "&appid=" + key;
@@ -33,6 +38,12 @@ function getFive(e) {
                 })
                 .then(function(currData) {
                     var date = new Date((currData.dt + currData.timezone)*1000).toLocaleDateString("en-US");
+                    var iconCode =  currData.weather[0].icon.slice(0,-1);
+                    console.log(iconCode);
+                    var iconUrl =  "http://openweathermap.org/img/wn/" + iconCode + "d@2x.png";
+                    var imgEl= $('<img id="currIcon" class="mb-2 ml-4 text-center">');
+                    imgEl.attr("src",iconUrl);
+                    imgEl.insertAfter("h3");
                     currLoc.text(currData.name + " " + date);
                     currTemp.text("Temp: " + currData.main.temp + "°F");
                     currFeel.text("Feels Like: " + currData.main.feels_like + "°F");
@@ -52,7 +63,11 @@ function getFive(e) {
                         if (i%8===0 || i==0) {
                             var date = new Date((fiveData.list[i].dt+fiveData.city.timezone)*1000).toLocaleDateString("en-US");
                             forecast.children().eq(i/8).children().children().eq(0).text(date);
-                            forecast.children().eq(i/8).children().children().eq(1).text("");
+                            //extra d at end is for day icon only because night icons don't have color 12:00AM is always night
+                            var iconCode =  fiveData.list[i].weather[0].icon.slice(0,-1);
+                            console.log(iconCode);
+                            var iconUrl =  "http://openweathermap.org/img/wn/" + iconCode + "d@2x.png";
+                            forecast.children().eq(i/8).children().children().eq(1).attr("src",iconUrl);
                             forecast.children().eq(i/8).children().children().eq(2).text("Temp: " + fiveData.list[i].main.temp + "°F");
                             forecast.children().eq(i/8).children().children().eq(3).text("Wind: " + fiveData.list[i].wind.speed + " MPH");
                             forecast.children().eq(i/8).children().children().eq(4).text("Humidity: " + fiveData.list[i].main.humidity + "%");
@@ -61,7 +76,11 @@ function getFive(e) {
                             //The date converts the unix time stamp to normal time.
                             var date = new Date((fiveData.list[i].dt+fiveData.city.timezone)*1000).toLocaleDateString("en-US");
                             forecast.children().eq(4).children().children().eq(0).text(date);
-                            forecast.children().eq(4).children().children().eq(1).text("");
+                            var iconCode =  fiveData.list[i].weather[0].icon.slice(0,-2);
+                            console.log(iconCode);
+                            var iconUrl =  "http://openweathermap.org/img/wn/" + iconCode + "d@2x.png";
+                            forecast.children().eq(4).children().children().eq(1).attr("src",iconUrl);
+                            iconEl.src=iconUrl;
                             forecast.children().eq(4).children().children().eq(2).text("Temp: " + fiveData.list[i].main.temp + "°F");
                             forecast.children().eq(4).children().children().eq(3).text("Wind: " + fiveData.list[i].wind.speed + " MPH");
                             forecast.children().eq(4).children().children().eq(4).text("Humidity: " + fiveData.list[i].main.humidity + "%");
@@ -73,13 +92,13 @@ function getFive(e) {
 
 searchInp.keydown(function(e) {
     if (e.which ==13) {
-      getFive(searchInp.val());
+      getWeather(searchInp.val());
       saveAdd(searchInp.val());
     }
 });
 
 searchBtn.on('click',function() {
-    getFive(searchInp.val());
+    getWeather(searchInp.val());
     saveAdd(searchInp.val());
 });
 
@@ -111,7 +130,8 @@ function saveAdd(e) {
 //click event to recall function for buttons
 saved.on('click','button',function() {
     var buttonText = $(this).text();
-    getFive(buttonText);
+    currWea.children().eq(1).remove();
+    getWeather(buttonText);
 })
 
 // Loads button history for recently searched places
@@ -122,9 +142,11 @@ function loadHistory() {
         saved.append(newBtn);
         newBtn.text(saveLoc[i]);
     }
+    console.log(saveLoc[0]);
+    getWeather(saveLoc[0]);
 }
 
 // Load local storage data if it there is an array in local storage.
-if (JSON.parse(localStorage.saveArray).length !== 0) {
+if (typeof(localStorage.saveArray) !== "undefined") {
     loadHistory();
 }

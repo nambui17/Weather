@@ -6,6 +6,10 @@
     --do: #FB8500;
 }
 
+body {
+    color: var(--db);
+}
+
 #searchDiv {
     border-bottom: var(--db) solid 3px;
 }
@@ -23,7 +27,7 @@
 }
 
 #currentWea {
-    border: var(--db) solid 2px;
+    border: var(--do) solid 2px;
     margin: 20px 20px 20px 0;
 }
 
@@ -36,7 +40,3 @@
     line-height: 40px;
     font-size:  20px;
 }
-
-
-
-

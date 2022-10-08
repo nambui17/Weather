@@ -16,7 +16,7 @@
     border-color: var(--lb2);
 }
 
-#savedLoc {
+.savedLoc {
     width: 100%;
     background-color: var(--lo);
     color: var(--db);

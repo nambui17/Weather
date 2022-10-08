@@ -7,13 +7,16 @@ var currHumid = $('#currHumid');
 var currFeel = $('#feels');
 var currLoc = $('#loc');
 var forecast = $('#forecast');
+var saved = $('#savedLocations');
+var saveArray=[];
 
 //get Current weather function
 
 //get the Weather function for five day forecast
-function getFive() {
+function getFive(e) {
     //location url for geocoding dependent on the search value for the input
-    var locUrl = "https://api.openweathermap.org/geo/1.0/direct?q=" + searchInp.val() + "&appid=" + key;
+    //parameter passed into function is either the search bar value or the text of the button for search history
+    var locUrl = "https://api.openweathermap.org/geo/1.0/direct?q=" + e + "&appid=" + key;
     fetch(locUrl)
         .then(function(response) {
             return response.json();
@@ -70,12 +73,58 @@ function getFive() {
 
 searchInp.keydown(function(e) {
     if (e.which ==13) {
-      getFive();
+      getFive(searchInp.val());
+      saveAdd(searchInp.val());
     }
 });
 
 searchBtn.on('click',function() {
-    getFive();
+    getFive(searchInp.val());
+    saveAdd(searchInp.val());
 });
 
+//function to populate the recent searches
 
+function saveAdd(e) {
+    console.log(saved.children().length)
+    if (saved.children().length <= 10) {
+        var newBtn = $('<button type="button" class="btn mb-4 mt-2 savedLoc"></button>');
+        saved.append(newBtn);
+        newBtn.text(e);
+        saveArray.unshift(e);
+        localStorage.setItem("saveArray",JSON.stringify(saveArray));
+        //resets search field
+        searchInp.val('');
+    } else {
+        //remove the first button that was
+        $('#savedLocations button').first().remove();
+        var newBtn = $('<button type="button" class="btn mb-4 mt-2 savedLoc"></button>');
+        saved.append(newBtn);
+        newBtn.text(e);
+        saveArray.pop();
+        saveArray.unshift(e);
+        localStorage.setItem("saveArray",JSON.stringify(saveArray));
+        searchInp.val('');
+    }
+}
+
+//click event to recall function for buttons
+saved.on('click','button',function() {
+    var buttonText = $(this).text();
+    getFive(buttonText);
+})
+
+// Loads button history for recently searched places
+function loadHistory() {
+    var saveLoc = JSON.parse(localStorage.saveArray);
+    for (i=0; i<saveLoc.length; i++) {
+        var newBtn = $('<button type="button" class="btn mb-4 mt-2 savedLoc"></button>');
+        saved.append(newBtn);
+        newBtn.text(saveLoc[i]);
+    }
+}
+
+// Load local storage data if it there is an array in local storage.
+if (JSON.parse(localStorage.saveArray).length !== 0) {
+    loadHistory();
+}
